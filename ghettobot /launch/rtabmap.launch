@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <arg name="database_path"     default="rtabmap.db"/>
+  <!-- Mapping Node -->
+  <group ns="rtabmap">
+
+   <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="--delete_db_on_start">
+<!--node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen"-->
+
+      <!-- Basic RTAB-Map Parameters -->
+      <param name="database_path"       type="string" value="$(arg database_path)"/>
+      <param name="frame_id"            type="string" value="robot_footprint"/> <!--"robot_footprint"/-->
+      <param name="odom_frame_id"       type="string" value="odom"/>
+      <param name="odom_tf_angular_variance" type="double" value="0.005"/>
+      <param name="odom_tf_linear_variance"  type="double" value="0.005"/>
+      <param name="subscribe_depth"     type="bool"   value="false"/>
+      <param name="subscribe_rgbd"      type="bool"   value="true"/>
+      <param name="subscribe_scan"      type="bool"   value="true"/>
+      <param name="subscribe_odom"      type="bool"   value="true"/>
+     <param name="odom_topic"      type="string"   value="/roboclaw/odom"/>
+      <param name="RGBD/NeighborLinkRefining" type="string" value="true"/>
+      <param name="RGBD/ProximityBySpace"     type="string" value="true"/>
+      <param name="RGBD/ProximityPathMaxNeighbors" type="string" value="30"/>
+      <param name="RGBD/AngularUpdate"        type="string" value="0.01"/>
+      <param name="RGBD/LinearUpdate"         type="string" value="0.01"/>
+      <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+      <param name="LocalBundleOnLoopClosure" type="string" value="true"/>
+      <param name="queue_size" type="int" value="80"/>
+      <param name="approx_sync" type="bool" value="true"/>
+      <param name="RGBD/OptimizeStrategy" type="string" value="2"/> <!-- g2o=1, GTSAM=2 -->
+      <param name="RGBD/OptimizeRobust" type="string" value="true"/>
+      <param name="RGBD/OptimizeMaxError" type="string" value="0"/> <!-- should be 0 if RGBD/OptimizeRobust is true -->
+      <param name="cloud_noise_filtering_radius" value="0.05"/>
+      <param name="cloud_noise_filtering_min_neighbors" value="2"/>
+
+      <!-- RTAB-Map Inputs -->
+      <remap from="scan"       to="/scan"/>
+      <remap from="rgbd_image" to="/rgbd_image/compressed"/>
+
+
+      <!-- RTAB-Map Output -->
+      <remap from="grid_map" to="/map"/>
+
+      <!-- Rate (Hz) at which new nodes are added to map -->
+      <param name="Rtabmap/DetectionRate" type="string" value="1"/> 
+
+      <!-- 2D SLAM -->
+      <param name="Reg/Force3DoF" type="string" value="true"/>      
+
+      <!-- Loop Closure Detection -->
+      <!-- 0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB 9=KAZE-->
+      <param name="Kp/DetectorStrategy" type="string" value="0"/>
+      <param name="Vis/FeatureType" type="string" value="0"/>  
+
+      <!-- Maximum visual words per image (bag-of-words) -->
+      <param name="Kp/MaxFeatures" type="string" value="1000"/>  
+
+      <!-- Used to extract more or less SURF features -->
+      <param name="SURF/HessianThreshold" type="string" value="700"/>
+
+      <!-- Loop Closure Constraint -->
+      <!-- 0=Visual, 1=ICP (1 requires scan)-->
+      <param name="Reg/Strategy" type="string" value="1"/> 
+
+      <!-- Minimum visual inliers to accept loop closure -->
+      <param name="Vis/MinInliers" type="string" value="18"/> <!--10-->
+
+      <!-- Set to false to avoid saving data when robot is not moving -->
+      <param name="Mem/NotLinkedNodesKept" type="string" value="false"/>
+
+      <param name="Icp/MaxCorrespondenceDistance" type="string" value="0.1"/>
+
+    </node> 
+  </group>
+
+  <!--launch rviz-->
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false"/>
+</launch>
