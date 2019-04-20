@@ -8,4 +8,5 @@ I also designed and built a real robot for use with rtabmap, a differential driv
 
 Please see the pdf writeup document for full details.
 
-![Gbot](...gbot-profile.png)
+
+![alt text](https://github.com/RossPLloyd/Ross-Lloyd--Udacity-Robotics-ND-Map-My_World/blob/master/gbot-profile.png)
