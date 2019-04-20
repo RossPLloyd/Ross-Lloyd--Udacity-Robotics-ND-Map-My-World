@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Map server -->
+  <arg name="map_file" default="$(find six_bot)/maps/jackal_race.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!-- Localization-->
+  <node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <remap from="scan" to="six_bot/laser/scan"/>
+    <param name="odom_frame_id" value="odom"/>
+    <param name="odom_model_type" value="diff-corrected"/>
+    <param name="base_frame_id" value="robot_footprint"/>
+    <param name="global_frame_id" value="map"/>
+    <param name="transform_tolerance" value="0.3"/><!--0.3--> 
+    <param name="initial_pose" value="0 0 0 0 0 0"/>
+    <param name="controller_frequency" value="4.0"/>
+    <param name="min_particles" value="200"/>
+    <param name="max_particles" value="8000"/> <!--8000-->
+
+    <!-- Overall filter parameters-->
+
+    <!-- <param name="min_particles" value="100"/>
+        Minimum allowed number of particles. 
+    <param name="max_particles" value="5000"/> -->
+        <!-- Maximum allowed number of particles.  -->
+    <param name="kld_err" value="0.01"/>
+        <!-- Maximum error between the true distribution and the estimated distribution. --> 
+    <param name="kld_z" value="0.99"/>
+        <!-- Upper standard normal quantile for (1 - p), where p is the probability that the error on the estimated distrubition will be less than kld_err.  -->
+    <param name="update_min_d" value="0.4"/> <!--0.4 works for project-->
+        <!-- Translational movement required before performing a filter update.  -->
+    <param name="update_min_a" value="0.392699082"/> <!-- "π/8.0 radians" works for project -->
+        <!-- Rotational movement required before performing a filter update.  -->
+    <param name="resample_interval" value="2"/> <!-- 2 -->
+        <!-- Number of filter updates required before resampling.  -->
+    <param name="recovery_alpha_slow" value="0.0"/>
+        <!-- Exponential decay rate for the slow average weight filter, used in deciding when to recover by adding random poses. A good value might be 0.001.  -->
+    <param name="recovery_alpha_fast" value="0.0"/>
+       <!--  Exponential decay rate for the fast average weight filter, used in deciding when to recover by adding random poses. A good value might be 0.1.  -->
+ <!--    <param name="initial_pose_x" value="0.0"/> -->
+        <!-- Initial pose mean (x), used to initialize filter with Gaussian distribution. --> 
+ <!--    <param name="initial_pose_y" value="0.0"/> -->
+        <!-- Initial pose mean (y), used to initialize filter with Gaussian distribution.  -->
+<!--     <param name="initial_pose_a" value="0.0"/> -->
+        <!-- Initial pose mean (yaw), used to initialize filter with Gaussian distribution.  -->
+<!--     <param name="initial_cov_xx" value="0.5*0.5 meters"/> -->
+        <!-- Initial pose covariance (x*x), used to initialize filter with Gaussian distribution. --> 
+ <!--    <param name="initial_cov_yy" value="0.5*0.5 meters"/> -->
+        <!-- Initial pose covariance (y*y), used to initialize filter with Gaussian distribution. --> 
+<!--     <param name="initial_cov_aa" value="(π/12)*(π/12) radian"/> -->
+        <!-- Initial pose covariance (yaw*yaw), used to initialize filter with Gaussian distribution. --> 
+    <param name="gui_publish_rate" value="4.0"/> <!-- "-1.0 Hz" -->
+        <!-- Maximum rate (Hz) at which scans and paths are published for visualization, -1.0 to disable.  -->
+<!--     <param name="save_pose_rate" value="0.5 Hz"/> -->
+        <!-- Maximum rate (Hz) at which to store the last estimated pose and covariance to the parameter server, in the variables <param name="initial_pose_* and <param name="initial_cov_*. This saved pose will be used on subsequent runs to initialize the filter. -1.0 to disable.  -->
+    <param name="use_map_topic" value="true"/> <!-- false -->
+        <!-- When set to true, AMCL will subscribe to the map topic rather than making a service call to receive its map. New in navigation 1.4.2  -->
+    <param name="first_map_only" value="false"/>
+      <!--   When set to true, AMCL will only use the first map it subscribes to, rather than updating each time a new one is received. New in navigation 1.4.2 -->
+
+    <!-- 
+    Laser model parameters
+
+    Note that whichever mixture weights are in use should sum to 1. The beam model uses all 4: z_hit, z_short, z_max, and z_rand. The likelihood_field model uses only 2: z_hit and z_rand. -->
+
+    <param name="laser_min_range" value="-1.0"/> <!-- -1.0 -->
+    <!-- Minimum scan range to be considered; -1.0 will cause the laser's reported minimum range to be used.  -->
+    <param name="laser_max_range" value="-1.0"/>
+       <!--  Maximum scan range to be considered; -1.0 will cause the laser's reported maximum range to be used. -->
+    <param name="laser_max_beams" value="30"/> <!-- 30 -->
+        <!-- How many evenly-spaced beams in each scan to be used when updating the filter.  -->
+    <param name="laser_z_hit" value="0.95"/>  <!-- 0.95 -->
+        <!-- Mixture weight for the z_hit part of the model.  -->
+    <!-- <param name="laser_z_short" value="0.1"/> -->  <!-- 0.1 -->
+        <!-- Mixture weight for the z_short part of the model.  -->
+    <!-- <param name="laser_z_max" value="0.05"/>  -->  <!-- 0.05 -->
+        <!-- Mixture weight for the z_max part of the model. -->
+    <param name="laser_z_rand" value="0.05"/>   <!-- 0.05 -->
+        <!-- Mixture weight for the z_rand part of the model.  -->
+<!--     <param name="laser_sigma_hit" value="0.2 meters"/> -->
+        <!-- Standard deviation for Gaussian model used in z_hit part of the model. --> 
+    <param name="laser_lambda_short" value="0.1"/>
+    <!--Exponential decay parameter for z_short part of model.  -->
+<!--     <param name="laser_likelihood_max_dist" value="3.0 meters"/>  -->  <!-- 2.0 meters -->
+        <!-- Maximum distance to do obstacle inflation on map, for use in likelihood_field model. --> 
+    <param name="laser_model_type" value="likelihood_field"/> <!-- likelihood_field -->
+        <!-- Which model to use, either beam, likelihood_field, or likelihood_field_prob (same as likelihood_field but incorporates the beamskip feature, if enabled). --> 
+
+
+    <!-- Odometry model parameters -->
+    <!-- <param name="odom_model_type" value="diff"/> -->
+       <!--  Which model to use, either "diff", "omni", "diff-corrected" or "omni-corrected".  -->
+    <param name="odom_alpha1" value="0.0"/> <!-- 0.2 for all -->
+        <!-- Specifies the expected noise in odometrys rotation estimate from the rotational component of the robots motion.  -->
+    <param name="odom_alpha2" value="0.0"/>
+        <!-- Specifies the expected noise in odometry's rotation estimate from translational component of the robots motion.  -->
+    <param name="odom_alpha3" value="0.0"/>
+        <!-- Specifies the expected noise in odometry's translation estimate from the translational component of the robot's motion.  -->
+    <param name="odom_alpha4" value="0.0"/>
+        <!-- Specifies the expected noise in odometry's translation estimate from the rotational component of the robot's motion.  -->
+    <param name="odom_alpha5" value="0.0"/>
+        <!-- Translation-related noise parameter (only used if model is "omni"). --> 
+    <!--param name="odom_frame_id" value="odom"/-->
+       <!--  Which frame to use for odometry.  -->
+    <!-- <param name="base_frame_id" value="base_link"/> -->
+        <!-- Which frame to use for the robot base  -->
+    <!-- <param name="global_frame_id" value="map"/> -->
+        <!-- The name of the coordinate frame published by the localization system  -->
+    <param name="tf_broadcast" value="true"/>
+        <!-- Set this to false to prevent amcl from publishing the transform between the global frame and the odometry frame.  -->
+
+      
+   </node>
+
+<!-- Move base -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find six_bot)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find six_bot)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find six_bot)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find six_bot)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find six_bot)/config/base_local_planner_params.yaml" command="load" />
+
+    <remap from="cmd_vel" to="cmd_vel"/>
+    <remap from="odom" to="odom"/>
+    <remap from="scan" to="six_bot/laser/scan"/>
+    <!-- <remap from="initialpose" to="move_base/initialpose"/> -->
+
+    <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
+    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+    <param name="recovery_behavior_enabled" value="true"/>
+    
+
+  </node>
+
+
+</launch>
+
+

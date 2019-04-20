@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<robot name="six_bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <gazebo>
+    <!--plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so" /-->     
+     <plugin name="diffDrivePlugin6W" filename="libdiffdrive_plugin_6w.so">
+      <rosDebugLevel>Debug</rosDebugLevel>
+      <robotNamespace>/</robotNamespace>
+      <!--legacyMode>false</legacyMode-->
+      <alwaysOn>true</alwaysOn>
+      <!--publishOdomTF>true</publishOdomTF-->
+      <publishWheelTF>true</publishWheelTF>
+      <publishWheelJointState>true</publishWheelJointState>
+      <updateRate>50</updateRate>
+      <frontLeftJoint>left_wheel1_hinge</frontLeftJoint>
+      <frontRightJoint>right_wheel1_hinge</frontRightJoint>
+      <midLeftJoint>left_wheel2_hinge</midLeftJoint>
+      <midRightJoint>right_wheel2_hinge</midRightJoint>
+      <rearLeftJoint>left_wheel3_hinge</rearLeftJoint>
+      <rearRightJoint>right_wheel3_hinge</rearRightJoint>
+      <wheelSeparation>0.21</wheelSeparation>
+      <wheelDiameter>0.1</wheelDiameter>
+      <torque>1</torque>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <odometrySource>world</odometrySource>
+      <!--broadcastTF>true</broadcastTF-->
+      <robotBaseFrame>robot_footprint</robotBaseFrame>
+    </plugin>
+  </gazebo>
+
+    <xacro:macro name="sixbot_sim_3dsensor">      
+      <gazebo reference="camera_link">  
+      <sensor type="depth" name="camera">
+        <always_on>true</always_on>
+        <update_rate>20.0</update_rate>
+        <camera>
+          <horizontal_fov>${60.0*3.14159/180.0}</horizontal_fov>
+          <image>
+            <format>B8G8R8</format>
+            <!--format>R8G8B8</format-->
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.05</near> <!--0.1-->
+            <far>8.0</far> <!--20-->
+          </clip>
+        </camera>
+        <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
+          <cameraName>camera</cameraName>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>10</updateRate>
+          <imageTopicName>rgb/image_raw</imageTopicName>
+          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          <frameName>camera_depth_optical_frame</frameName>
+                        <!--pointCloudCutoff>0.4</pointCloudCutoff-->                
+                	<!--hackBaseline>0.07</hackBaseline-->
+	  <baseline>0.1</baseline>
+          <distortion_k1>0.0</distortion_k1>
+          <distortion_k2>0.0</distortion_k2>
+          <distortion_k3>0.0</distortion_k3>
+          <distortion_t1>0.0</distortion_t1>
+          <distortion_t2>0.0</distortion_t2>
+          <pointCloudCutoff>0.4</pointCloudCutoff>
+            <CxPrime>0.0</CxPrime>
+            <Cx>0.0</Cx>
+            <Cy>0.0</Cy>
+            <focalLength>0.0</focalLength>
+
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <!-- hokuyo -->
+  <gazebo reference="hokuyo">
+    <sensor type="ray" name="head_hokuyo_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.570796</min_angle>
+            <max_angle>1.570796</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.2</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+        <topicName>/six_bot/laser/scan</topicName>
+        <frameName>hokuyo</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
+</robot>

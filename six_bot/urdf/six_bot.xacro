@@ -1,0 +1,455 @@
+<?xml version="1.0"?>
+
+<robot name="six_bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find six_bot)/urdf/six_bot.gazebo"/>
+  <xacro:include filename="$(find six_bot)/urdf/sensors/kinect.urdf.xacro"/>
+  
+
+
+  <link name="robot_footprint"></link>
+
+  <joint type="fixed" name="robot_footprint_joint">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="robot_footprint"/>
+    <child link="chassis"/>
+  </joint>
+
+
+
+
+
+  <link name="chassis">
+    <pose>0 0 0.1 0 0 0</pose>
+
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1"
+      />
+    </inertial>
+
+    <collision name="collision">
+      <origin xyz="0 0 0.025" rpy="0 0 1.570796"/> 
+      <geometry>
+        <!--mesh filename="package://six_bot/meshes/chassisMETREC3.dae"/-->    
+        <box size=".32 .21 .1"/>
+      </geometry>
+    </collision>
+
+    <visual name="chassis_visual">
+      <origin xyz="0 0 0" rpy="0 0 1.570796"/>
+      <geometry>
+        <mesh filename="package://six_bot/meshes/chassisMETREC3.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+
+
+
+
+
+  <link name="right_wheel1">
+    <collision name="right_wheel1_collision">
+      <origin xyz="0 -0.02636289 0" rpy="1.5707963267940 0 0"/> 26.36289
+      <geometry>
+        <!--mesh filename="package://six_bot/meshes/UdacistoneMeterC3.dae"/-->
+        <cylinder length="0.045" radius="0.05"/> 
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1" />
+    </inertial>
+
+    <visual name="right_wheel1_visual">
+      <origin xyz="0 -0.02636289 0" rpy="1.570796 0 0"/>
+      <geometry>
+        <mesh filename="package://six_bot/meshes/UdacistoneMeterC1.dae"/>
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint type="continuous" name="right_wheel1_hinge">
+    <origin xyz="0.115 -0.10 0.00" rpy="0 0 0"/>
+    <child link="right_wheel1"/> 
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0" friction="1.0"/>
+
+  </joint>
+
+
+
+
+
+
+
+  <link name="left_wheel1">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1" />
+    </inertial>
+
+    <collision name="left_wheel1_collision">
+      <origin xyz="0 0.02636289 0" rpy="-1.5707963267940 0 0"/>
+      <geometry>
+        <!--mesh filename="package://six_bot/meshes/UdacistoneMeterC3.dae"/-->
+        <cylinder length="0.045" radius="0.05"/> 
+      </geometry>
+    </collision>
+
+    <visual name="left_wheel1_visual">
+      <origin xyz="0 0.02636289 0" rpy="-1.5707963267940 0 0"/>
+      <geometry>
+	<mesh filename="package://six_bot/meshes/UdacistoneMeterC1.dae"/>        
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint type="continuous" name="left_wheel1_hinge">
+    <origin xyz="0.115 0.10 0.00" rpy="0 0 0"/>
+    <child link="left_wheel1"/> 
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0" friction="1.0"/>
+
+  </joint>
+
+   
+
+
+
+
+
+
+ 
+  <link name="left_wheel2">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1" />
+    </inertial>
+
+    <collision name="left_wheel2_collision">
+      <origin xyz="0 0.02636289 0" rpy="-1.5707963267940 0 0"/>
+      <geometry>
+        <!--mesh filename="package://six_bot/meshes/UdacistoneMeterC3.dae"/-->
+        <cylinder length="0.045" radius="0.05"/> 
+      </geometry>
+    </collision>
+
+    <visual name="left_wheel2_visual">
+      <origin xyz="0 0.02636289 0" rpy="-1.570796 0 0"/>
+      <geometry>
+	<mesh filename="package://six_bot/meshes/UdacistoneMeterC1.dae"/> 
+       
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint type="continuous" name="left_wheel2_hinge">
+    <origin xyz="-0.005 0.10 0.00" rpy="0 0 0"/>
+    <child link="left_wheel2"/> 
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0" friction="1.0"/>
+
+  </joint>
+
+
+
+
+
+
+
+
+  <link name="right_wheel2">
+    <collision name="right_wheel2_collision">
+      <origin xyz="0 -0.02636289 0" rpy="1.5707963267940 0 0"/>
+      <geometry>
+        <!--mesh filename="package://six_bot/meshes/UdacistoneMeterC3.dae"/-->
+        <cylinder length="0.045" radius="0.05"/> 
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1" />
+    </inertial>
+
+    <visual name="right_wheel2_visual">
+      <origin xyz="0 -0.02636289 0" rpy="1.5707963267940 0 0"/>
+      <geometry>
+        <mesh filename="package://six_bot/meshes/UdacistoneMeterC1.dae"/>
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint type="continuous" name="right_wheel2_hinge">
+    <origin xyz="-0.005 -0.10 0.00" rpy="0 0 0"/>
+    <child link="right_wheel2"/> 
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0" friction="1.0"/>
+
+  </joint>
+
+
+
+
+
+
+
+  <link name="right_wheel3">
+    <collision name="right_wheel3_collision">
+      <origin xyz="0 -0.02636289 0" rpy="1.5707963267940 0 0"/>
+      <geometry>
+        <!--mesh filename="package://six_bot/meshes/UdacistoneMeterC3.dae"/-->
+        <cylinder length="0.045" radius="0.05"/> 
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1" />
+    </inertial>
+
+    <visual name="right_wheel3_visual">
+      <origin xyz="0 -0.02636289 0" rpy="1.5707963267940 0 0"/>
+      <geometry>
+        <mesh filename="package://six_bot/meshes/UdacistoneMeterC1.dae"/>
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint type="continuous" name="right_wheel3_hinge">
+    <origin xyz="-0.125 -0.1 0.00" rpy="0 0 0"/>
+    <child link="right_wheel3"/> 
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0" friction="1.0"/>
+
+  </joint>
+
+
+
+
+
+
+
+  <link name="left_wheel3">
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1" />
+    </inertial>
+
+    <collision name="left_wheel3_collision">
+      <origin xyz="0 0.02636289 0" rpy="-1.5707963267940 0 0"/>
+      <geometry>
+        <!--mesh filename="package://six_bot/meshes/UdacistoneMeterC3.dae"/-->
+        <cylinder length="0.045" radius="0.05"/> 
+      </geometry>
+    </collision>
+
+    <visual name="left_wheel3_visual">
+      <origin xyz="0 0.02636289 0" rpy="-1.5707963267940 0 0"/>
+      <geometry>
+	<mesh filename="package://six_bot/meshes/UdacistoneMeterC1.dae"/>        
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint type="continuous" name="left_wheel3_hinge">
+    <origin xyz="-0.125 0.10 0.00" rpy="0 0 0"/>
+    <child link="left_wheel3"/> 
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="10000" velocity="1000"/>
+    <dynamics damping="1.0" friction="1.0"/>
+
+  </joint>
+
+<link name="tower">
+    <collision name="tower_collision">
+      <origin xyz="0 0 0" rpy="0 0 1.5707963267940"/>
+        <geometry>
+	  <mesh filename="package://six_bot/meshes/tower.dae"/>
+          <!--box size="0.05 0.05 0.09"/-->
+          <!-- box size="0.1 0.1 0.1"/-->
+        </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="1e-6" ixy="0" ixz="0"
+          iyy="1e-6" iyz="0"
+          izz="1e-6" />
+    </inertial>
+
+    <visual name="tower_visual">
+      <origin xyz="0 0 0" rpy="0 0 1.5707963267940"/>
+      <geometry>
+        <mesh filename="package://six_bot/meshes/tower.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint type="fixed" name="tower_joint">
+    <origin xyz="0.055 0 0.075" rpy="0 0 0"/>
+    <child link="tower"/> 
+    <parent link="chassis"/>
+  </joint>
+
+  <xacro:sensor_kinect parent="tower_angle"/>
+    <!--origin xyz="0.0 0 0.1" rpy="0 0 0" /-->
+  <!--/xacro:sensor_kinect-->
+
+<link name="tower_angle">
+    <collision name="tower_angle_collision">
+      <origin xyz="0 0 0" rpy="0 0 1.5707963267940"/>
+        <geometry>
+	  <mesh filename="package://six_bot/meshes/towerangle.dae"/>
+          <!--box size="0.05 0.05 0.09"/-->
+          <!-- box size="0.1 0.1 0.1"/-->
+        </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="0" ixy="0" ixz="0"
+          iyy="0" iyz="0"
+          izz="0" />
+    </inertial>
+
+    <visual name="tower_angle_visual">
+      <origin xyz="0 0 0" rpy="0 0 1.5707963267940"/>
+      <geometry>
+        <mesh filename="package://six_bot/meshes/towerangle.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint type="fixed" name="tower_angle_joint">
+    <origin xyz="0.035 0 0.095" rpy="0 0 0"/>
+    <child link="tower_angle"/> 
+    <parent link="tower"/>
+  </joint>
+
+
+
+
+
+  <!--link name="camera">
+    <collision name="camera_collision">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>      
+          <box size="0.045 0.045 0.045"/>
+        </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="1e-6" ixy="0" ixz="0"
+          iyy="1e-6" iyz="0"
+          izz="1e-6" />
+    </inertial>
+
+    <visual name="camera_visual">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.045 0.045 0.045"/>
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <origin xyz="0.15 0 0.045" rpy="0 0 0"/>
+    <child link="camera"/> 
+    <parent link="chassis"/>
+  </joint-->
+
+
+
+
+
+
+<link name="hokuyo">
+    <collision name="hokuyo_collision">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.1 0.1 0.1"/>
+          <!-- box size="0.1 0.1 0.1"/-->
+        </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="1e-6" ixy="0" ixz="0"
+          iyy="1e-6" iyz="0"
+          izz="1e-6" />
+    </inertial>
+
+    <visual name="hokuyo_visual">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://six_bot/meshes/hokuyo.dae"/>
+      </geometry>
+    </visual>
+  
+  </link>
+
+  <joint type="fixed" name="hokuyo_joint">
+    <origin xyz="0.12 0 0.11" rpy="0 0 0"/>
+    <child link="hokuyo"/> 
+    <parent link="chassis"/>
+  </joint>
+
+</robot>
