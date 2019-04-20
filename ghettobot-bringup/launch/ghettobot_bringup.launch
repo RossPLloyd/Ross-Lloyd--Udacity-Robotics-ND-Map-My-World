@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+<param name="robot_description" command="$(find xacro)/xacro --inorder $(find ghettobot)/urdf/ghettobot.xacro" />
+
+<param name="use_gui" value="false"/>
+<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+<!--include file="$(find ghettobot)/launch/empty_world.launch"/-->
+<include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch">
+   <arg name="fps_limit" value="10"/>
+</include>
+   <arg name="pi" value="3.141592654"/>
+   <arg name="pi/2" value="1.5707963267948966"/>
+   <arg name="optical_rotate" value="0 0 0 -1.57079632 0 -1.57079632" /> <!--"0 0 0 -1.57079632 0 -1.3621214"-->
+   <node pkg="tf" type="static_transform_publisher" name="kinect2_base_link"
+   args="$(arg optical_rotate) shelf1_kinect2_rgb_optical_frame kinect2_link 100" /> 
+
+<!--include file="$(find kinect2_bridge)/launch/kinect2_bridge_throttle.launch"/-->
+
+<include file="$(find rplidar_ros)/launch/rplidar.launch">
+    <param name="rate" type="double" value="5.0"/>
+</include>
+   <!--arg name="rpl_optical_rotate" value="0 0 0 0 0 0" />
+   <node pkg="tf" type="static_transform_publisher" name="lidar_base_link"
+   args="$(arg rpl_optical_rotate) shelf2 lidar 100" /--> 
+
+
+<node name="phoebe_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+<!--node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /-->
+
+<include file="$(find roboclaw_node)/launch/roboclaw.launch"/>
+
+ <arg name="rate"  default="5.0"/>
+  <arg name="decimation"     default="1"/>
+  <!-- Use same nodelet used by kinect2_bridge -->
+  <node pkg="nodelet" type="nodelet" name="data_throttle" args="load rtabmap_ros/data_throttle kinect2" output="screen">
+      <param name="rate" type="double" value="$(arg rate)"/>
+      <param name="decimation" type="int" value="$(arg decimation)"/>
+      <param name="approx_sync" type="bool" value="false"/> <!-- exact sync for kinect2 topics -->
+
+      <remap from="rgb/image_in"       to="/kinect2/qhd/image_color_rect"/>
+      <remap from="depth/image_in"     to="/kinect2/qhd/image_depth_rect"/>
+      <remap from="rgb/camera_info_in" to="/kinect2/qhd/camera_info"/>
+
+      <remap from="rgb/image_out"       to="/kinect2/qhd/data_throttled_image"/>
+      <remap from="depth/image_out"     to="/kinect2/qhd/data_throttled_image_depth"/>
+      <remap from="rgb/camera_info_out" to="/kinect2/qhd/data_throttled_camera_info"/>
+  </node>
+
+  <!-- pre-sync kinect images before sending them over network -->
+  <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="load rtabmap_ros/rgbd_sync kinect2">
+      <remap from="rgb/image"         to="/kinect2/qhd/data_throttled_image"/>
+      <remap from="depth/image"       to="/kinect2/qhd/data_throttled_image_depth"/>
+      <remap from="rgb/camera_info"   to="/kinect2/qhd/data_throttled_camera_info"/>
+      <remap from="rgbd_image"        to="/rtabmap/rgbd_image"/> <!-- output -->
+      <param name="approx_sync"       type="bool" value="false"/>   <!-- exact sync for kinect2 topics -->
+  </node>
+   
+</launch>
