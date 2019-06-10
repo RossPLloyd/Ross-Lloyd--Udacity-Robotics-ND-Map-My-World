@@ -1,5 +1,7 @@
 # Ross-Lloyd--Udacity-Robotics-ND-Map-My-World
 
+Video of the robot mapping: https://www.youtube.com/watch?v=GhORvviVI_g&feature=youtu.be
+
 Packages used in the Udacity Map My World project. 
 
 I submitted a custom created gazebo world and custom virtual robot design with original assets, and used them to create maps with the rtabmap package.
